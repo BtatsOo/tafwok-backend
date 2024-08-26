@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const cors = require("cors");
 app.use(
   cors({
-    origin: "http://localhost:3001", // Replace with your frontend's origin
+    origin: ["http://localhost:3001", process.env.FRONT_URI], // Replace with your frontend's origin
     credentials: true, // Allow credentials (cookies) to be sent}));
   })
 );
