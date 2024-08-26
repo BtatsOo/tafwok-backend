@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Course = require("../models/course");
 const courseContent = require("../models/courseContent");
-const { type } = require("@testing-library/user-event/dist/type");
+
 const studentSchema = new mongoose.Schema({
   name: {
     type: String,
