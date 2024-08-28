@@ -10,6 +10,10 @@ const Student = require("../models/student");
 router.get("/", async (req, res) => {
   try {
     const courses = await courseContent.find();
+    courses.forEach((course) => {
+      course.content = null;
+    });
+
     res.json(courses);
   } catch (err) {
     res.json({ message: err.message });
