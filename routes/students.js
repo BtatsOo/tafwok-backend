@@ -63,7 +63,6 @@ router.post("/register", async (req, res) => {
 
 //check if user have a avalid token and dont need to go to login page again!
 router.get("/login", async (req, res) => {
-  return res.json({req.headers})
   const existingToken = req.cookies.accessToken;
   if (existingToken) {
     jwt.verify(existingToken, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
