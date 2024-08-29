@@ -104,7 +104,7 @@ router.post("/login", async (req, res) => {
   ); //cookies
   res.cookie("accessToken", accesstoken, {
     httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-    secure: false, // Ensures the cookie is only sent over HTTPSprocess.env.NODE_ENV === "production"
+    secure: true, // Ensures the cookie is only sent over HTTPSprocess.env.NODE_ENV === "production"
     sameSite: "None", // Helps prevent CSRF attacks
   });
   res.json({ accesstoken: accesstoken });
