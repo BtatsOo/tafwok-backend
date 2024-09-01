@@ -115,7 +115,7 @@ router.get("/logout", (req, res) => {
   res.cookie("accessToken", "", {
     expires: new Date(0), // Set the expiration date to a past date
     httpOnly: true, // Ensure it's not accessible via JavaScript
-    secure: process.env.NODE_ENV === "production", // Send only over HTTPS in production
+    secure: false, // Send only over HTTPS in production//process.env.NODE_ENV === "production"
     sameSite: "Strict", // Prevent CSRF attacks
     path: "/", // Ensure the path matches the cookie's original path
   });
