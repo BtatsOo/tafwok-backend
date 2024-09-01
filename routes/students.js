@@ -116,7 +116,7 @@ router.get("/logout", (req, res) => {
     expires: new Date(0), // Set the expiration date to a past date
     httpOnly: true, // Ensure it's not accessible via JavaScript
     secure: false, // Send only over HTTPS in production//process.env.NODE_ENV === "production"
-    sameSite: "Strict", // Prevent CSRF attacks
+    sameSite: "None", // Prevent CSRF attacks
     path: "/", // Ensure the path matches the cookie's original path
   });
   res.send("Cookie deleted and logged out");
