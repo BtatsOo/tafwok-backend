@@ -51,6 +51,7 @@ router.post("/register", async (req, res) => {
     password: await bcrypt.hash(req.body.password, 10),
     phoneNumber: req.body.phoneNumber,
     city: req.body.city,
+    balance:150, //for first month !
   });
   try {
     const newStudent = await student.save(); //await stop code under it if u forgot!
