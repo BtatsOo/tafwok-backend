@@ -112,8 +112,8 @@ router.post("/login", async (req, res) => {
 // students log out
 router.get("/logout", (req, res) => {
   // Set the cookie with an expired date to delete it
-  res.cookie("accessToken", "", {
-    expires: new Date(0), // Set the expiration date to a past date
+  res.cookie("accessToken", "sa23fed", {
+  expires: new Date(Date.now() + 1000), // Set the expiration date to a past date
     httpOnly: true, // Ensure it's not accessible via JavaScript
     secure: false, // Send only over HTTPS in production//process.env.NODE_ENV === "production"
     sameSite: "None", // Prevent CSRF attacks
