@@ -26,6 +26,10 @@ const studentSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  guardianPhone: {
+    type: Number,
+    required: true,
+  },
   enrolledCourses: [
     {
       type: mongoose.Schema.Types.ObjectId,

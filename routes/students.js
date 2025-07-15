@@ -50,11 +50,26 @@ router.post("/register", async (req, res) => {
     email: req.body.email,
     password: await bcrypt.hash(req.body.password, 10),
     phoneNumber: req.body.phoneNumber,
+    guardianPhone: req.body.guardianPhone,
     city: req.body.city,
+    balance: 150,
   });
   try {
     const newStudent = await student.save(); //await stop code under it if u forgot!
-    res.status(200).json("successfully Created");
+    const accesstoken = jwt.sign(
+      newStudent.toObject(),
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "24h" }
+    ); //cookies
+    res.cookie("accessToken", accesstoken, {
+      httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+      secure: true, // Ensures the cookie is only sent over HTTPSprocess.env.NODE_ENV === "production"
+      sameSite: "None", // Helps prevent CSRF attacks
+    });
+
+    res
+      .status(200)
+      .json({ accesstoken: accesstoken, message: "successfully Created" });
     console.log("successfully Created", newStudent);
   } catch (err) {
     res.status(501).json({ message: err.message });
@@ -88,6 +103,7 @@ router.get("/login", async (req, res) => {
 // student login
 router.post("/login", async (req, res) => {
   const { name, password } = req.body;
+  console.log(name, password);
   const studentsInDB = await Student.find();
   const user = studentsInDB.find((stu) => stu.name === name); // if not it return undefind
   if (!user) {
@@ -100,7 +116,7 @@ router.post("/login", async (req, res) => {
   const accesstoken = jwt.sign(
     user.toObject(),
     process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "1h" }
+    { expiresIn: "24h" }
   ); //cookies
   res.cookie("accessToken", accesstoken, {
     httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
@@ -115,7 +131,7 @@ router.get("/logout", (req, res) => {
   res.cookie("accessToken", "", {
     expires: new Date(0), // Set the expiration date to a past date
     httpOnly: true, // Ensure it's not accessible via JavaScript
-    secure: process.env.NODE_ENV === "production", // Send only over HTTPS in production
+    secure: false, //process.env.NODE_ENV === "production", // Send only over HTTPS in production
     sameSite: "Strict", // Prevent CSRF attacks
     path: "/", // Ensure the path matches the cookie's original path
   });

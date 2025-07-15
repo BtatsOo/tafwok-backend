@@ -1,29 +1,43 @@
 const mongoose = require("mongoose");
 const Course = require("../models/course");
+
 const courseContentSchema = new mongoose.Schema({
   title: String,
+  provider: String,
+  category: String,
   description: String,
 
-  duration: Number,
+  duration: String,
   featuredImage: String,
   price: Number,
+  originalPrice: Number,
+  features: [String],
 
   content: [
     {
-      topic: [
+      title: String,
+      description: String,
+      lessons: [
         {
-          title: String,
-          description: String,
-          lessons: [
+          url: String,
+          title: String, // Optional: title for each lesson if needed
+          duration: Number, // Optional: duration for each lesson if needed
+          lessonType: String, //lesson type : quiz, homework, lesson,docs
+          questions: [
             {
-              url: String,
-              title: String, // Optional: title for each lesson if needed
-              duration: Number, // Optional: duration for each lesson if needed
+              title: String,
+              questionOptions: [
+                {
+                  title: String,
+                  correctValue: { type: Boolean, default: false },
+                },
+              ],
             },
           ],
-          docs: {},
         },
       ],
+
+      docs: {},
     },
   ],
 });

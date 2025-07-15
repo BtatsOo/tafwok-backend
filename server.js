@@ -6,14 +6,19 @@ const jwt = require("jsonwebtoken");
 const cors = require("cors");
 app.use(
   cors({
-    origin: ["http://localhost:3001", process.env.FRONT_URI], // Replace with your frontend's origin
+    origin: [
+      "http://localhost:5173",
+      process.env.FRONT_URI,
+      "http://127.0.0.1:5500",
+    ], // Replace with your frontend's origin
     credentials: true, // Allow credentials (cookies) to be sent}));
   })
 );
 
-mongoose.connect(process.env.DATABASE_URL);
-const db = mongoose.connection;
-
+mongoose.connect(process.env.DATABASE_URL); //return a promise
+const db = mongoose.connection; // this is property that represent  connection state and its events
+console.log(db);
+console.log("////////////////////////////////////////");
 db.on("error", (err) => {
   console.log(err, "errors");
 });
@@ -37,6 +42,7 @@ app.use(express.json());
 // });
 //return the user after verify it
 const studentsRoutes = require("./routes/students");
+
 app.use("/", studentsRoutes);
 const coursesRoutes = require("./routes/courses");
 app.use("/courses", coursesRoutes);
