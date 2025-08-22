@@ -52,7 +52,8 @@ router.post("/register", async (req, res) => {
     phoneNumber: req.body.phoneNumber,
     guardianPhone: req.body.guardianPhone,
     city: req.body.city,
-    balance: 150,
+    balance: 250,
+    class: req.body.class1,
   });
   try {
     const newStudent = await student.save(); //await stop code under it if u forgot!

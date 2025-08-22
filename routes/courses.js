@@ -44,7 +44,7 @@ router.get("/:id", async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(404).json({ message: "Course not found" });
     }
-    console.log(courses, "courses");
+    console.log(courses);
     courses.content.forEach((contentItem) => {
       contentItem &&
         contentItem.lessons.forEach((lesson) => {
@@ -54,6 +54,7 @@ router.get("/:id", async (req, res) => {
           }
         });
     });
+
     res.json(courses);
   } catch (err) {
     // check cast error !
@@ -134,6 +135,7 @@ router.get("/enroll/:id", authentcationToken, async (req, res) => {
   if (user?.enrolledCourses.includes(req.params.id)) {
     try {
       const courseContentenrolled = await courseContent.findById(req.params.id);
+      console.log("enrolled from local");
 
       res.json({ message: "successfly enrolled", courseContentenrolled });
     } catch (err) {

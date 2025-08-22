@@ -37,6 +37,10 @@ const studentSchema = new mongoose.Schema({
     },
   ],
   balance: Number,
+  class: {
+    type: String,
+    unique: true,
+  },
 });
 
 module.exports = mongoose.model("Student", studentSchema);

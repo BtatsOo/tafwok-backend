@@ -7,9 +7,9 @@ const cors = require("cors");
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
       process.env.FRONT_URI,
-      "http://127.0.0.1:5500",
+      process.env.FRONT_URI1,
+      "http://localhost:5173",
     ], // Replace with your frontend's origin
     credentials: true, // Allow credentials (cookies) to be sent}));
   })
@@ -50,3 +50,4 @@ const chekout = require("./routes/checkout");
 app.use("/", chekout);
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log("Server Is Connected"));
+// console.log("Loaded FRONT_URI:", process.env.FRONT_URI);
