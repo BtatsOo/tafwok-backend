@@ -17,7 +17,7 @@ app.use(
 
 mongoose.connect(process.env.DATABASE_URL); //return a promise
 const db = mongoose.connection; // this is property that represent  connection state and its events
-console.log(db);
+// console.log(db);
 console.log("////////////////////////////////////////");
 db.on("error", (err) => {
   console.log(err, "errors");

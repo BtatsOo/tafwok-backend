@@ -41,6 +41,18 @@ const studentSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
+  watchedLessons: [
+    {
+      lessonId: { type: mongoose.Schema.Types.ObjectId, ref: "Lesson" },
+      count: { type: Number, default: 0 },
+      sessions: [
+        {
+          reached: [Number],
+          At: { type: Date, default: Date.now }, // checkpoints for that session
+        },
+      ],
+    },
+  ],
 });
 
 module.exports = mongoose.model("Student", studentSchema);

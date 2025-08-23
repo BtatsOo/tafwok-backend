@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const Student = require("../models/student");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const student = require("../models/student");
 // functions
 async function getStudent(req, res, next) {
   let student;
@@ -138,6 +139,65 @@ router.get("/logout", (req, res) => {
   });
   res.send("Cookie deleted and logged out");
 });
+router.patch("/checkpoint", authentcationToken, async (req, res) => {
+  try {
+    const { lessonId, checkpointArray, timeDiff } = req.body;
+    const userId = req.user?._id;
+    console.log(userId, "userId");
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // Find user
+    const user = await Student.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User not found, please sign in!" });
+    }
+
+    // normalize checkpoints array
+    const checkpoints = Array.isArray(checkpointArray)
+      ? checkpointArray
+      : [checkpointArray];
+
+    // find the watched lesson entry if exists
+    let lesson = user.watchedLessons.find(
+      (wl) => wl.lessonId.toString() === lessonId.toString()
+    );
+
+    if (lesson) {
+      // lesson exists
+      if (timeDiff >= 24 || lesson.sessions.length === 0) {
+        // ⏰ more than 24h (new session)
+        lesson.sessions.push({ reached: checkpoints });
+        lesson.count = (lesson.count || 0) + 1; // increment count for new session
+      } else {
+        // ⏰ same day (overwrite last session only)
+        const lastSession = lesson.sessions[lesson.sessions.length - 1];
+        lastSession.reached.addToSet(...checkpoints);
+        lastSession.At = new Date();
+      }
+    } else {
+      // lesson not tracked yet → create a new entry
+      user.watchedLessons.push({
+        lessonId,
+        count: 1,
+        sessions: [{ reached: checkpoints }],
+      });
+    }
+
+    // save user
+    await user.save();
+
+    res.json({ message: "Checkpoint updated successfully!" });
+  } catch (err) {
+    console.error("Checkpoint error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
 // Updating One
 router.patch("/:id", (req, res) => {});
 // Deleting One (b3deen)

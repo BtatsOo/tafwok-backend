@@ -220,7 +220,6 @@ router.patch("/purchase/:id", authentcationToken, async (req, res) => {
     const price = courseContentenrolled.price;
     if (user.balance >= price) {
       user.balance -= price;
-      console.log(user);
       const updatedUser = await Student.findByIdAndUpdate(
         req.user._id,
         {
@@ -377,3 +376,5 @@ router.get("/myquiz/results", authentcationToken, async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 });
+
+// recieve checkpoints and send to database !
