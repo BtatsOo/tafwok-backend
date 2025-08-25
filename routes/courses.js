@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
   try {
     let courses = await courseContent.find();
     //  if he is center show all online and center
-    if (req?.user?.typeOfStudent && req?.user?.typeOfStudent === "center")
+    if (req?.user?.class && req?.user?.class.includes("سنتر"))
       return res.json(courses);
     courses = courses.filter((course) => !course.category.includes("center"));
     courses.forEach((course) => {
