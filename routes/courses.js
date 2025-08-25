@@ -8,11 +8,12 @@ const authentcationToken = require("./authToken");
 const courseContent = require("../models/courseContent");
 const Student = require("../models/student");
 //getting all
-router.get("/", async (req, res) => {
+router.get("/", authentcationToken, async (req, res) => {
   try {
     let courses = await courseContent.find();
     //  if he is center show all online and center
-    if (req?.user?.class && req?.user?.class.includes("سنتر"))
+    console.log(req.user);
+    if (req?.user?.class && req?.user?.class.includes("center"))
       return res.json(courses);
     courses = courses.filter((course) => !course.category.includes("center"));
     courses.forEach((course) => {

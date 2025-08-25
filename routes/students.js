@@ -141,7 +141,7 @@ router.get("/logout", (req, res) => {
 });
 router.patch("/checkpoint", authentcationToken, async (req, res) => {
   try {
-    const { lessonId, checkpointArray, timeDiff } = req.body;
+    const { lessonId, checkpointArray, timeDiff, lessonName } = req.body;
     const userId = req.user?._id;
     console.log(userId, "userId");
 
@@ -183,6 +183,7 @@ router.patch("/checkpoint", authentcationToken, async (req, res) => {
       // lesson not tracked yet → create a new entry
       user.watchedLessons.push({
         lessonId,
+        lessonName,
         count: 1,
         sessions: [{ reached: checkpoints }],
       });

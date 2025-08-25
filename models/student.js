@@ -45,6 +45,7 @@ const studentSchema = new mongoose.Schema({
   watchedLessons: [
     {
       lessonId: { type: mongoose.Schema.Types.ObjectId, ref: "Lesson" },
+      lessonName: { type: String },
       count: { type: Number, default: 0 },
       sessions: [
         {
