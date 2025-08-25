@@ -10,9 +10,14 @@ const Student = require("../models/student");
 //getting all
 router.get("/", async (req, res) => {
   try {
-    const courses = await courseContent.find();
-
+    let courses = await courseContent.find();
+    //  if he is center show all online and center
+    if (req?.user?.typeOfStudent && req?.user?.typeOfStudent === "center")
+      return res.json(courses);
+    courses = courses.filter((course) => !course.category.includes("center"));
     courses.forEach((course) => {
+      // console.log(course.category.includes("center"));
+
       course.content = null;
     });
 
@@ -94,7 +99,6 @@ router.post("/create-course-content", authentcationToken, async (req, res) => {
       featuredImage: req.body.featuredImage,
       originalPrice: req.body.originalPrice,
       features: req.body.features,
-
       content: req.body.content.map((topicData) => ({
         title: topicData.title,
         description: topicData.description,

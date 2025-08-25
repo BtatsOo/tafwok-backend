@@ -30,6 +30,11 @@ const studentSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  typeOfStudent: {
+    type: String,
+    default: "online",
+  },
+
   enrolledCourses: [
     {
       type: mongoose.Schema.Types.ObjectId,
