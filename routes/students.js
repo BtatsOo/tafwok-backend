@@ -8,6 +8,14 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const student = require("../models/student");
 // functions
+
+// async function getPass() {
+//   let password = await bcrypt.hash("amina123", 10);
+//   return password;
+// }
+
+// getPass().then((hashed) => console.log(hashed));
+
 async function getStudent(req, res, next) {
   let student;
   try {
@@ -53,7 +61,7 @@ router.post("/register", async (req, res) => {
     phoneNumber: req.body.phoneNumber,
     guardianPhone: req.body.guardianPhone,
     city: req.body.city,
-    balance: 250,
+    balance: 0,
     class: req.body.class1,
   });
   try {

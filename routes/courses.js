@@ -13,8 +13,13 @@ router.get("/", authentcationToken, async (req, res) => {
     let courses = await courseContent.find();
     //  if he is center show all online and center
     console.log(req.user);
-    if (req?.user?.class && req?.user?.class.includes("center"))
+    if (req?.user?.class && req?.user?.class.includes("center")) {
+      courses = courses.filter(
+        (course) => !course.category.includes("انجليزي")
+      );
+
       return res.json(courses);
+    }
     courses = courses.filter((course) => !course.category.includes("center"));
     courses.forEach((course) => {
       // console.log(course.category.includes("center"));
