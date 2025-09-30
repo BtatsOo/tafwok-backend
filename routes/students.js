@@ -9,12 +9,12 @@ const jwt = require("jsonwebtoken");
 const student = require("../models/student");
 // functions
 
-// async function getPass() {
-//   let password = await bcrypt.hash("amina123", 10);
-//   return password;
-// }
+async function getPass() {
+  let password = await bcrypt.hash("rokia123", 10);
+  return password;
+}
 
-// getPass().then((hashed) => console.log(hashed));
+getPass().then((hashed) => console.log(hashed));
 
 async function getStudent(req, res, next) {
   let student;
@@ -31,6 +31,7 @@ async function getStudent(req, res, next) {
 }
 async function authentcationToken(req, res, next) {
   const existingToken = req.cookies.accessToken;
+  // console.log(existingToken);
   if (existingToken) {
     jwt.verify(existingToken, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
       if (err) {
@@ -115,7 +116,9 @@ router.post("/login", async (req, res) => {
   const { name, password } = req.body;
   console.log(name, password);
   const studentsInDB = await Student.find();
-  const user = studentsInDB.find((stu) => stu.name === name); // if not it return undefind
+  const user = studentsInDB.find(
+    (stu) => stu.name === name || stu.email === name
+  ); // if not it return undefind
   if (!user) {
     return res.status(404).json({ message: "Invalid UserName" });
   }
@@ -206,10 +209,56 @@ router.patch("/checkpoint", authentcationToken, async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
+router.patch("/event", authentcationToken, async (req, res) => {
+  // console.log(req);
+  const user = await Student.findById(req.user?._id);
+  try {
+    if (req.body.action === "delete") {
+      // delete event by _id
+      const newEvents = user.events.filter((e) => {
+        // console.log(e._id.toString() === "68dadf1330f2ae4fb8832e6d");
+        return e._id.toString() !== req.body.eventId;
+      });
+      console.log("newEvents ID ///////////////////////////", newEvents);
+      //
+      const updatedUser = await Student.findByIdAndUpdate(
+        user._id,
+        {
+          $set: { events: newEvents },
+        },
+        { new: true }
+      );
+
+      res.json({ success: true, events: updatedUser });
+    } else {
+      if (!user) {
+        return res
+          .status(404)
+          .json({ loginUser: false, message: "Please Login" });
+      }
+      const updateUser = await Student.findByIdAndUpdate(
+        user._id,
+        {
+          $push: {
+            events: { title: req.body.data.title, date: req.body.data.date },
+          },
+        },
+        { new: true, runValidators: true } //new :true return the updated document
+      );
+      console.log(updateUser);
+      res.json({ message: updateUser });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+});
 
 // Updating One
-router.patch("/:id", (req, res) => {});
+
+// router.patch("/:id", (req, res) => {});
 // Deleting One (b3deen)
+
+// updateEvents in Schedule
 
 // const existingToken = req.cookies.accessToken;
 // if (existingToken) {

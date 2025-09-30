@@ -12,7 +12,7 @@ router.get("/", authentcationToken, async (req, res) => {
   try {
     let courses = await courseContent.find();
     //  if he is center show all online and center
-    console.log(req.user);
+    // console.log(req.user); // we will write english center like EN Center
     if (req?.user?.class && req?.user?.class.includes("center")) {
       courses = courses.filter(
         (course) => !course.category.includes("انجليزي")
@@ -386,5 +386,152 @@ router.get("/myquiz/results", authentcationToken, async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 });
+// update courses content !
+// first: add new lesson
+router.patch("/update-course/:id", authentcationToken, async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  const { action, data, topicId, lessonId, questionId } = req.body;
+  if (
+    req.user?.name === "admin" &&
+    req.user._id === "66bb5695e463dbd49ddf0442"
+  ) {
+    try {
+      let updateQuery = {};
+      let options = { new: true };
+      let arrayFilters = [];
+
+      if (!action) {
+        // Default: shallow update (like price, title, description, etc.)
+        updateQuery = { $set: data };
+      }
+
+      // Add a new topic
+      else if (action === "addTopic") {
+        updateQuery = { $push: { content: data } };
+      }
+
+      // Update a topic (title, description, etc.)
+      else if (action === "updateTopic") {
+        // replace the whole data of topic so u should write all data correctly !
+        updateQuery = {
+          $set: { "content.$[topic]": { ...data, _id: topicId } },
+        };
+        arrayFilters = [{ "topic._id": topicId }];
+      }
+
+      // Add a lesson to a topic
+      else if (action === "addLesson") {
+        updateQuery = { $push: { "content.$[topic].lessons": data } };
+        arrayFilters = [{ "topic._id": topicId }];
+      }
+
+      // Update a lesson in a topic
+      else if (action === "updateLesson") {
+        updateQuery = {
+          $set: {
+            "content.$[topic].lessons.$[lesson]": { ...data, _id: lessonId },
+          },
+        };
+        arrayFilters = [{ "topic._id": topicId }, { "lesson._id": lessonId }];
+      }
+
+      // Add a question to a lesson
+      else if (action === "addQuestion") {
+        updateQuery = {
+          $push: { "content.$[topic].lessons.$[lesson].questions": data },
+        };
+        arrayFilters = [{ "topic._id": topicId }, { "lesson._id": lessonId }];
+      }
+
+      // Update a question in a lesson
+      else if (action === "updateQuestion") {
+        updateQuery = {
+          $set: {
+            "content.$[topic].lessons.$[lesson].questions.$[question]": {
+              ...data,
+              _id: questionId,
+            },
+          },
+        };
+        arrayFilters = [
+          { "topic._id": topicId },
+          { "lesson._id": lessonId },
+          { "question._id": questionId },
+        ];
+      }
+
+      // Apply arrayFilters only if needed
+      if (arrayFilters.length > 0) {
+        options.arrayFilters = arrayFilters;
+      }
+
+      const updatedCourse = await courseContent.findByIdAndUpdate(
+        id,
+        updateQuery,
+        options
+      );
+
+      if (!updatedCourse) {
+        return res.status(404).json({ message: "Course not found" });
+      }
+
+      res.json(updatedCourse);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message });
+    }
+  } else {
+    console.log(req.user);
+    res
+      .status(403)
+      .json({ message: "you dont have permisson to update courses!" });
+  }
+});
+// 🔹 Example Usage
+// 1. Update price
+// PATCH /courses/123
+// {
+//   "data": { "price": 200 }
+// }
+
+// 2. Add a topic
+// PATCH /courses/123
+// {
+//   "action": "addTopic",
+//   "data": { "title": "Topic 2", "description": "New topic", "lessons": [] }
+// }
+
+// 3. Add a lesson to a topic
+// PATCH /courses/123
+// {
+//   "action": "addLesson",
+//   "topicId": "68ac1b2d246648cd022adb97",
+//   "data": { "title": "Lesson 1", "url": "http://...", "duration": 25 }
+// }
+
+// 4. Update a lesson title
+// PATCH /courses/123
+// {
+//   "action": "updateLesson",
+//   "topicId": "68ac1b2d246648cd022adb97",
+//   "lessonId": "68ac1b2d246648cd022adb98",
+//   "data": { "title": "New Lesson Title" }
+// }
+
+// 5. Add a question to a lesson
+// PATCH /courses/123
+// {
+//   "action": "addQuestion",
+//   "topicId": "68ac1b2d246648cd022adb97",
+//   "lessonId": "68ac1b2d246648cd022adb98",
+//   "data": {
+//     "title": "What is React?",
+//     "questionOptions": [
+//       { "title": "A library", "correctValue": true },
+//       { "title": "A framework", "correctValue": false }
+//     ]
+//   }
+// }
 
 // recieve checkpoints and send to database !

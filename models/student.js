@@ -55,6 +55,7 @@ const studentSchema = new mongoose.Schema({
       ],
     },
   ],
+  events: [{ title: String, date: String }],
 });
 
 module.exports = mongoose.model("Student", studentSchema);
