@@ -56,6 +56,7 @@ const studentSchema = new mongoose.Schema({
     },
   ],
   events: [{ title: String, date: String }],
+  enrolledLessons: [String],
 });
 
 module.exports = mongoose.model("Student", studentSchema);

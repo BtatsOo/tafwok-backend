@@ -15,7 +15,7 @@ router.get("/", authentcationToken, async (req, res) => {
     // console.log(req.user); // we will write english center like EN Center
     if (req?.user?.class && req?.user?.class.includes("center")) {
       courses = courses.filter(
-        (course) => !course.category.includes("انجليزي")
+        (course) => !course.category.includes("english")
       );
 
       return res.json(courses);
@@ -32,6 +32,7 @@ router.get("/", authentcationToken, async (req, res) => {
     res.json({ message: err.message });
   }
 });
+
 //get enrolled courses
 router.get("/enrolled-courses", authentcationToken, async (req, res) => {
   const user = await Student.findById(req.user?._id);
@@ -139,6 +140,8 @@ router.post("/create-course-content", authentcationToken, async (req, res) => {
 //get access to course content based on id
 router.get("/enroll/:id", authentcationToken, async (req, res) => {
   const user = await Student.findById(req.user?._id);
+  const lessonId = req.query.lessonid;
+  console.log("lessonId////////////////////////////////", lessonId);
   const haspurchased = user?.enrolledCourses.includes(req.params.id);
 
   console.log({ ifcsd: haspurchased });
@@ -151,10 +154,45 @@ router.get("/enroll/:id", authentcationToken, async (req, res) => {
     } catch (err) {
       res.json({ message: "error course content is invalid!" });
     }
+  }
+
+  // put query selector lessondId and put filter if have lesson will send the course with just this lesson !
+  else if (user?.class === "الصف الثالث الثانوي center") {
+    const haspurchasedLesson = user?.enrolledLessons?.includes(lessonId);
+    console.log("haspurchaseLessons", haspurchasedLesson);
+    if (haspurchasedLesson) {
+      const courseContentenrolled = await courseContent.findById(req.params.id);
+      const contentAfter = courseContentenrolled.content.filter(
+        (el) => el._id.toString() === lessonId
+      );
+      courseContentenrolled.content = contentAfter;
+      res.json({ message: "successfly enrolled", courseContentenrolled });
+      console.log(courseContentenrolled);
+    } else {
+      res
+        .status(403)
+        .json({ message: "u dont have permission to get to the lesson!" });
+    }
   } else {
     res.status(403).json({ message: "You Dont Have Access To This Course !" });
   }
 });
+// get access to course by lesson Id
+// special for center
+// router.get("enroll/lesson/:id", authentcationToken, async (req, res) => {
+//   const lessonId = req.params.id;
+//   const user = await Student.findById(req.user?._id);
+
+//   if (user?.class === "الصف الثالث الثانوي center") {
+//     //  const haspurchasedLesson = user?.enrolledLessons?.includes(req)
+//     const courseContentenrolled = await courseContent.findById(req.params.id);
+
+//     const lessonafter = courseContentenrolled.content.filter(
+//       (el) => el._id === lessonId
+//     );
+//     console.log(lessonafter);
+//   }
+// });
 //get access to quiz by its id
 router.get(
   "/enroll/:id/quiz/enroll/:lessonId",
